@@ -29,7 +29,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using log4net;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using OpenMetaverse;
 using OpenSim.Framework;
 using OpenSim.Data;

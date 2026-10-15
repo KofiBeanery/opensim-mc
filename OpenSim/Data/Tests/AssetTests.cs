@@ -37,7 +37,7 @@ using System.Data.Common;
 using log4net;
 
 // DBMS-specific:
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using OpenSim.Data.MySQL;
 
 using Mono.Data.Sqlite;

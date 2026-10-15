@@ -1,0 +1,29 @@
+<Project>
+  <!--
+    MC: the MySQL driver is MySqlConnector (NuGet), not Oracle's MySql.Data.dll.
+    prebuild generates the project files, so the package reference is added here,
+    only to the projects that talk to MySQL. Keep the version in step with NGC v1.0.49 (2.5.0).
+  -->
+  <ItemGroup Condition="'$(MSBuildProjectName)' == 'OpenSim.Data.MySQL'
+                      Or '$(MSBuildProjectName)' == 'OpenSim.Region.CoreModules'
+                      Or '$(MSBuildProjectName)' == 'OpenSim.Addons.OfflineIM'
+                      Or '$(MSBuildProjectName)' == 'OpenSim.Data.Tests'">
+    <PackageReference Include="MySqlConnector" Version="2.5.0" />
+  </ItemGroup>
+
+  <!--
+    Core's generated projects set UseCommonOutputDirectory=true and write to a shared ./bin.
+    With that setting the SDK's _CopyFilesMarkedCopyLocal step is skipped
+    ('$(UseCommonOutputDirectory)' != 'true'), so NuGet runtime assemblies are NOT copied
+    and the region would fail at start with "Could not load file or assembly MySqlConnector".
+    Copy them explicitly: MySqlConnector.dll always, its dependencies only if bin/ lacks them
+    (so Core's own committed copies are never overwritten).
+  -->
+  <Target Name="MC_CopyNuGetRuntimeToBin" AfterTargets="Build" Condition="'$(MSBuildProjectName)' == 'OpenSim.Data.MySQL'">
+    <ItemGroup>
+      <_McNuGetRuntime Include="@(RuntimeCopyLocalItems)"
+                       Condition="'%(Filename)%(Extension)' == 'MySqlConnector.dll' Or !Exists('$(OutDir)%(Filename)%(Extension)')" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_McNuGetRuntime)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
+</Project>

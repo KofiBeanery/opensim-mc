@@ -33,12 +33,12 @@ using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using log4net;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 namespace OpenSim.Data.MySQL
 {
     /// <summary>This is a MySQL-customized migration processor.  The only difference is in how
-    /// it executes SQL scripts (using MySqlScript instead of MyCommand)
+    /// it executes SQL scripts (as plain MySqlCommands; MySqlConnector has no MySqlScript)
     ///
     /// </summary>
     public class MySqlMigration : Migration
@@ -66,16 +66,21 @@ namespace OpenSim.Data.MySQL
                 return;
             }
 
-            MySqlScript scr = new MySqlScript((MySqlConnection)conn);
+            // MySqlConnector has no MySqlScript class. None of the MySQL migration
+            // resources use DELIMITER, stored procedures or triggers, so each block
+            // runs as an ordinary (multi-statement) command.
+            foreach (string sql in script)
             {
-                foreach (string sql in script)
+                try
                 {
-                    scr.Query = sql;
-                    scr.Error += delegate(object sender, MySqlScriptErrorEventArgs args)
+                    using (MySqlCommand cmd = new MySqlCommand(sql, (MySqlConnection)conn))
                     {
-                        throw new Exception(sql);
-                    };
-                    scr.Execute();
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception)
+                {
+                    throw new Exception(sql);
                 }
             }
         }
