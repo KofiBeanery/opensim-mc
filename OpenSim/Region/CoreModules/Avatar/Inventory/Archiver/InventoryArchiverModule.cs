@@ -74,6 +74,12 @@ namespace OpenSim.Region.CoreModules.Avatar.Inventory.Archiver
         private Dictionary<UUID, Scene> m_scenes = new Dictionary<UUID, Scene>();
         private Scene m_aScene;
 
+        /// <summary>
+        /// When false, 'load iar' and 'save iar' do not take or check the user's password
+        /// ([InventoryArchiver] RequirePassword = false). Access to the console is the authority.
+        /// </summary>
+        private bool m_requirePassword = true;
+
         private IUserAccountService m_UserAccountService;
         protected IUserAccountService UserAccountService
         {
@@ -103,6 +109,13 @@ namespace OpenSim.Region.CoreModules.Avatar.Inventory.Archiver
 
         public void Initialise(IConfigSource source)
         {
+            // Default (true) is stock behaviour: the console commands ask for the user's password.
+            IConfig config = source.Configs["InventoryArchiver"];
+            if (config != null)
+                m_requirePassword = config.GetBoolean("RequirePassword", true);
+
+            if (!m_requirePassword)
+                m_log.Info("[INVENTORY ARCHIVER]: RequirePassword is false: 'load iar' and 'save iar' take no password argument");
         }
 
         public void AddRegion(Scene scene)
@@ -115,20 +128,24 @@ namespace OpenSim.Region.CoreModules.Avatar.Inventory.Archiver
 
                 scene.AddCommand(
                     "Archiving", this, "load iar",
-                    "load iar [-m|--merge] <first> <last> <inventory path> <password> [<IAR path>]",
+                    m_requirePassword
+                        ? "load iar [-m|--merge] <first> <last> <inventory path> <password> [<IAR path>]"
+                        : "load iar [-m|--merge] <first> <last> <inventory path> [<IAR path>]",
                     "Load user inventory archive (IAR).",
                     "-m|--merge is an option which merges the loaded IAR with existing inventory folders where possible, rather than always creating new ones"
                     + "<first> is user's first name." + Environment.NewLine
                     + "<last> is user's last name." + Environment.NewLine
                     + "<inventory path> is the path inside the user's inventory where the IAR should be loaded." + Environment.NewLine
-                    + "<password> is the user's password." + Environment.NewLine
+                    + (m_requirePassword ? "<password> is the user's password." + Environment.NewLine : "")
                     + "<IAR path> is the filesystem path or URI from which to load the IAR."
                     + string.Format("  If this is not given then the filename {0} in the current directory is used", DEFAULT_INV_BACKUP_FILENAME),
                     HandleLoadInvConsoleCommand);
 
                 scene.AddCommand(
                     "Archiving", this, "save iar",
-                    "save iar [-h|--home=<url>] [--noassets | --skipbadassets] <first> <last> <inventory path> <password> [<IAR path>] [-c|--creators] [-e|--exclude=<name/uuid>] [-f|--excludefolder=<foldername/uuid>] [-v|--verbose]",
+                    m_requirePassword
+                        ? "save iar [-h|--home=<url>] [--noassets | --skipbadassets] <first> <last> <inventory path> <password> [<IAR path>] [-c|--creators] [-e|--exclude=<name/uuid>] [-f|--excludefolder=<foldername/uuid>] [-v|--verbose]"
+                        : "save iar [-h|--home=<url>] [--noassets | --skipbadassets] <first> <last> <inventory path> [<IAR path>] [-c|--creators] [-e|--exclude=<name/uuid>] [-f|--excludefolder=<foldername/uuid>] [-v|--verbose]",
                     "Save user inventory archive (IAR).",
                     "<first> is the user's first name.\n"
                     + "<last> is the user's last name.\n"
@@ -403,18 +420,22 @@ namespace OpenSim.Region.CoreModules.Avatar.Inventory.Archiver
 
                 List<string> mainParams = optionSet.Parse(cmdparams);
 
-                if (mainParams.Count < 6)
+                // command words ("load", "iar") + first + last + path [+ password]
+                int pathIndex = 4;
+                int fixedCount = m_requirePassword ? 6 : 5;
+                if (mainParams.Count < fixedCount)
                 {
-                    m_log.Error(
-                        "[INVENTORY ARCHIVER]: usage is load iar [-m|--merge] <first name> <last name> <inventory path> <user password> [<load file path>]");
+                    m_log.Error(m_requirePassword
+                        ? "[INVENTORY ARCHIVER]: usage is load iar [-m|--merge] <first name> <last name> <inventory path> <user password> [<load file path>]"
+                        : "[INVENTORY ARCHIVER]: usage is load iar [-m|--merge] <first name> <last name> <inventory path> [<load file path>]");
                     return;
                 }
 
                 string firstName = mainParams[2];
                 string lastName = mainParams[3];
-                string invPath = mainParams[4];
-                string pass = mainParams[5];
-                string loadPath = (mainParams.Count > 6 ? mainParams[6] : DEFAULT_INV_BACKUP_FILENAME);
+                string invPath = mainParams[pathIndex];
+                string pass = m_requirePassword ? mainParams[5] : string.Empty;
+                string loadPath = (mainParams.Count > fixedCount ? mainParams[fixedCount] : DEFAULT_INV_BACKUP_FILENAME);
 
                 m_log.InfoFormat(
                     "[INVENTORY ARCHIVER]: Loading archive {0} to inventory path {1} for {2} {3}",
@@ -466,10 +487,12 @@ namespace OpenSim.Region.CoreModules.Avatar.Inventory.Archiver
 
             try
             {
-                if (mainParams.Count < 6)
+                int fixedCount = m_requirePassword ? 6 : 5;
+                if (mainParams.Count < fixedCount)
                 {
-                    m_log.Error(
-                        "[INVENTORY ARCHIVER]: save iar [-h|--home=<url>] [--noassets | --skipbadassets] <first> <last> <inventory path> <password> [<IAR path>] [-c|--creators] [-e|--exclude=<name/uuid>] [-f|--excludefolder=<foldername/uuid>] [-v|--verbose]");
+                    m_log.Error(m_requirePassword
+                        ? "[INVENTORY ARCHIVER]: save iar [-h|--home=<url>] [--noassets | --skipbadassets] <first> <last> <inventory path> <password> [<IAR path>] [-c|--creators] [-e|--exclude=<name/uuid>] [-f|--excludefolder=<foldername/uuid>] [-v|--verbose]"
+                        : "[INVENTORY ARCHIVER]: save iar [-h|--home=<url>] [--noassets | --skipbadassets] <first> <last> <inventory path> [<IAR path>] [-c|--creators] [-e|--exclude=<name/uuid>] [-f|--excludefolder=<foldername/uuid>] [-v|--verbose]");
                     return;
                 }
 
@@ -479,8 +502,8 @@ namespace OpenSim.Region.CoreModules.Avatar.Inventory.Archiver
                 string firstName = mainParams[2];
                 string lastName = mainParams[3];
                 string invPath = mainParams[4];
-                string pass = mainParams[5];
-                string savePath = (mainParams.Count > 6 ? mainParams[6] : DEFAULT_INV_BACKUP_FILENAME);
+                string pass = m_requirePassword ? mainParams[5] : string.Empty;
+                string savePath = (mainParams.Count > fixedCount ? mainParams[fixedCount] : DEFAULT_INV_BACKUP_FILENAME);
 
                 m_log.InfoFormat(
                     "[INVENTORY ARCHIVER]: Saving archive {0} using inventory path {1} for {2} {3}",
@@ -568,6 +591,10 @@ namespace OpenSim.Region.CoreModules.Avatar.Inventory.Archiver
                     firstName, lastName);
                 return null;
             }
+
+            // RequirePassword = false: the caller is trusted (console or other in-process caller)
+            if (!m_requirePassword)
+                return account;
 
             try
             {
