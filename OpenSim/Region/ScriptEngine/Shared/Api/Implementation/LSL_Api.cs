@@ -5480,7 +5480,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                             SendExperienceEvent(ExperienceEvent.Teleport);
                         }
 
-                        DoLLTeleport(presence, destination, targetPos, targetLookAt);
+                        DoLLTeleport(presence, destination, targetPos, targetLookAt, is_experience);
                         return;
                     }
                 }
@@ -5532,14 +5532,19 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     if ((m_item.PermsMask & ScriptBaseClass.PERMISSION_TELEPORT) != 0)
                     {
                         ulong regionHandle = Util.RegionWorldLocToHandle((uint)global_coords.x, (uint)global_coords.y);
-                        World.RequestTeleportLocation(presence.ControllingClient, regionHandle, targetPos, targetLookAt, (uint)TeleportFlags.ViaLocation);
+                        World.RequestTeleportLocation(presence.ControllingClient, regionHandle, targetPos, targetLookAt,
+                            is_experience ? (uint)TeleportFlags.ViaLure : (uint)TeleportFlags.ViaLocation);
                     }
                 }
             }
         }
 
-        private void DoLLTeleport(ScenePresence sp, string destination, Vector3 targetPos, Vector3 targetLookAt)
+        // is_experience: a teleport made under an Experience the agent has allowed is sent as a lure
+        // (not a typed location), so it is not diverted to the region's telehub / landing point
+        private void DoLLTeleport(ScenePresence sp, string destination, Vector3 targetPos, Vector3 targetLookAt, bool is_experience = false)
         {
+            uint tpFlags = is_experience ? (uint)TeleportFlags.ViaLure : (uint)TeleportFlags.ViaLocation;
+
             UUID assetID = ScriptUtils.GetAssetIdFromKeyOrItemName(m_host, destination);
 
             // The destination is not an asset ID and also doesn't name a landmark.
@@ -5547,9 +5552,9 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             if (assetID.IsZero())
             {
                 if(string.IsNullOrEmpty(destination))
-                    World.RequestTeleportLocation(sp.ControllingClient, m_regionName, targetPos, targetLookAt, (uint)TeleportFlags.ViaLocation);
+                    World.RequestTeleportLocation(sp.ControllingClient, m_regionName, targetPos, targetLookAt, tpFlags);
                 else
-                    World.RequestTeleportLocation(sp.ControllingClient, destination, targetPos, targetLookAt, (uint)TeleportFlags.ViaLocation);
+                    World.RequestTeleportLocation(sp.ControllingClient, destination, targetPos, targetLookAt, tpFlags);
                 return;
             }
 
