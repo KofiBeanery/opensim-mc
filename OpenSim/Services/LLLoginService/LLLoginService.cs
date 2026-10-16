@@ -67,6 +67,7 @@ namespace OpenSim.Services.LLLoginService
         protected IFriendsService m_FriendsService;
         protected IAvatarService m_AvatarService;
         protected IUserAgentService m_UserAgentService;
+        protected IAccessControlService m_AccessControlService;
 
         protected GatekeeperServiceConnector m_GatekeeperConnector;
 
@@ -116,6 +117,7 @@ namespace OpenSim.Services.LLLoginService
             string friendsService = m_LoginServerConfig.GetString("FriendsService", string.Empty);
             string avatarService = m_LoginServerConfig.GetString("AvatarService", string.Empty);
             string simulationService = m_LoginServerConfig.GetString("SimulationService", string.Empty);
+            string accessControlService = m_LoginServerConfig.GetString("AccessControlService", string.Empty);
 
             m_WelcomeMessage = m_LoginServerConfig.GetString("WelcomeMessage", "Welcome to OpenSim!");
             m_RequireInventory = m_LoginServerConfig.GetBoolean("RequireInventory", true);
@@ -234,6 +236,8 @@ namespace OpenSim.Services.LLLoginService
                 m_RemoteSimulationService = ServerUtils.LoadPlugin<ISimulationService>(simulationService, args);
             if (!string.IsNullOrWhiteSpace(agentService))
                 m_UserAgentService = ServerUtils.LoadPlugin<IUserAgentService>(agentService, args);
+            if (!string.IsNullOrEmpty(accessControlService))
+                m_AccessControlService = ServerUtils.LoadPlugin<IAccessControlService>(accessControlService, args);
 
             // Get the Hypergrid inventory service (exists only if Hypergrid is enabled)
             string hgInvServicePlugin = m_LoginServerConfig.GetString("HGInventoryServicePlugin", string.Empty);
@@ -342,6 +346,12 @@ namespace OpenSim.Services.LLLoginService
 
             string curMac = mac.ToString();
 
+            if (m_AccessControlService is not null && m_AccessControlService.IsIPBanned(clientIP.Address.ToString()))
+            {
+                m_log.InfoFormat("[LLOGIN SERVICE]: Login failed, reason: client with banned IP {0}", clientIP.Address);
+                return LLFailedLoginResponse.BannedHardwareOrIP;
+            }
+
             try
             {
                 //
@@ -403,6 +413,12 @@ namespace OpenSim.Services.LLLoginService
                         m_log.InfoFormat("[LLOGIN SERVICE]: Login failed, reason: client with ido {0} is denied", id0);
                         return LLFailedLoginResponse.LoginBlockedProblem;
                     }
+                }
+
+                if (m_AccessControlService is not null && m_AccessControlService.IsHardwareBanned(curMac, id0))
+                {
+                    m_log.InfoFormat("[LLOGIN SERVICE]: Login failed, reason: client with banned hardware ids (mac {0}, id0 {1})", curMac, id0);
+                    return LLFailedLoginResponse.BannedHardwareOrIP;
                 }
 
                 //

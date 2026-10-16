@@ -642,6 +642,18 @@
     ;; Allow banning via hashed MAC must be set in both [GatekeeperService] and [LoginService]
     ;DeniedMacs = "YOURLONGMACTRSING ANOTHERMAC"
 
+    ;; Optional database backed ban list (IP address, viewer MAC hash, viewer id0 hash).
+    ;; Off unless both lines below are enabled. Add the same AccessControlService line to [GatekeeperService]
+    ;; (Robust.HG.ini) to apply it to Hypergrid visitors. Creates the tables banned_macs, banned_id0s, banned_ips.
+    ;; Console commands: ban|unban ip <address>, ban|unban mac <32-hex hash>, ban|unban id0 <32-hex hash>
+    ;AccessControlService = "OpenSim.Services.AccessControlService.dll:AccessControlService"
+
+[AccessControlService]
+    ;; Only used when an AccessControlService is set in [LoginService] / [GatekeeperService].
+    ;; Falls back to [DatabaseService] StorageProvider / ConnectionString when these are not given.
+    ;StorageProvider = "OpenSim.Data.MySQL.dll"
+    ;ConnectionString = "${Const|ConnectionString}"
+
 [MapImageService]
     LocalServiceModule = "OpenSim.Services.MapImageService.dll:MapImageService"
 
@@ -745,6 +757,11 @@
 
     ;; Allow banning via hashed MAC must be set in both [GatekeeperService] and [LoginService]
     ;DeniedMacs = "YOURLONGMACTRSING ANOTHERMAC"
+
+    ;; Optional database backed ban list (IP address, viewer MAC hash, viewer id0 hash).
+    ;; Off unless enabled. Use the same line in [LoginService]. Creates the tables banned_macs, banned_id0s, banned_ips.
+    ;; Console commands: ban|unban ip <address>, ban|unban mac <32-hex hash>, ban|unban id0 <32-hex hash>
+    ;AccessControlService = "OpenSim.Services.AccessControlService.dll:AccessControlService"
 
 [UserAgentService]
     LocalServiceModule = "OpenSim.Services.HypergridService.dll:UserAgentService"
