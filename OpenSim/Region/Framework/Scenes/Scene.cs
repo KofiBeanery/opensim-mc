@@ -474,6 +474,7 @@ namespace OpenSim.Region.Framework.Scenes
 
         private readonly Timer m_mapGenerationTimer = new();
         private readonly bool m_generateMaptiles;
+        private readonly bool m_generateMaptilesOnlyIfMissing;
 
         protected int m_lastHealth = -1;
         protected int m_lastUsers = -1;
@@ -1003,6 +1004,9 @@ namespace OpenSim.Region.Framework.Scenes
 
                 m_generateMaptiles
                     = Util.GetConfigVarFromSections<bool>(config, "GenerateMaptiles", possibleMapConfigSections, true);
+
+                m_generateMaptilesOnlyIfMissing
+                    = Util.GetConfigVarFromSections<bool>(config, "OnlyGenerateIfMissing", possibleMapConfigSections, false);
 
                 if (m_generateMaptiles)
                 {
@@ -2265,7 +2269,14 @@ namespace OpenSim.Region.Framework.Scenes
             //// stored in the GridService, because that's what the world map module uses
             //// to send the map image UUIDs (of other regions) to the viewer...
             if (m_generateMaptiles)
-                RegenerateMaptile();
+            {
+                // OnlyGenerateIfMissing: keep the tile the grid already has for this region (startup only;
+                // MaptileRefresh and the 'generate map' command still regenerate)
+                GridRegion existing = m_generateMaptilesOnlyIfMissing
+                    ? GridService.GetRegionByUUID(UUID.Zero, RegionInfo.RegionID) : null;
+                if (existing is null || existing.TerrainImage.IsZero())
+                    RegenerateMaptile();
+            }
 
             GridRegion region = new(RegionInfo);
             string error = GridService.RegisterRegion(RegionInfo.ScopeID, region);
