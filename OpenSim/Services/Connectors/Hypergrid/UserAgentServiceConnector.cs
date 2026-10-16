@@ -312,6 +312,11 @@ namespace OpenSim.Services.Connectors.Hypergrid
             GetBoolResponse(request, out reason);
         }
 
+        public bool IsKnownTravelingAgent(UUID userID, UUID sessionID)
+        {
+            return false;
+        }
+
         [Obsolete]
         public List<UUID> StatusNotification(List<string> friends, UUID userID, bool online)
         {

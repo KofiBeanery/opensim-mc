@@ -52,6 +52,7 @@ namespace OpenSim.Server.Handlers.Hypergrid
 //                MethodBase.GetCurrentMethod().DeclaringType);
 
         private IUserAgentService m_HomeUsersService;
+        private readonly ControlPlaneAccess m_ControlPlaneAccess;
         public IUserAgentService HomeUsersService
         {
             get { return m_HomeUsersService; }
@@ -74,6 +75,8 @@ namespace OpenSim.Server.Handlers.Hypergrid
         public UserAgentServerConnector(IConfigSource config, IHttpServer server, IFriendsSimConnector friendsConnector) :
                 base(config, server, String.Empty)
         {
+            m_ControlPlaneAccess = new ControlPlaneAccess(config);
+
             IConfig gridConfig = config.Configs["UserAgentService"];
             if (gridConfig != null)
             {
@@ -221,14 +224,22 @@ namespace OpenSim.Server.Handlers.Hypergrid
             UUID userID = UUID.Zero;
             UUID.TryParse(userID_str, out userID);
 
+            bool trustedCaller = remoteClient != null && m_ControlPlaneAccess.IsTrustedAddress(remoteClient.Address);
+            if (!trustedCaller && !m_HomeUsersService.IsKnownTravelingAgent(userID, sessionID))
+                return BoolResponse(false);
+
             m_HomeUsersService.LogoutAgent(userID, sessionID);
 
+            return BoolResponse(true);
+        }
+
+        private static XmlRpcResponse BoolResponse(bool success)
+        {
             Hashtable hash = new Hashtable();
-            hash["result"] = "true";
+            hash["result"] = success.ToString();
             XmlRpcResponse response = new XmlRpcResponse();
             response.Value = hash;
             return response;
-
         }
 
         [Obsolete]
