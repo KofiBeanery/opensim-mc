@@ -2276,6 +2276,9 @@ namespace OpenSim.Region.Framework.Scenes
                     ? GridService.GetRegionByUUID(UUID.Zero, RegionInfo.RegionID) : null;
                 if (existing is null || existing.TerrainImage.IsZero())
                     RegenerateMaptile();
+                else
+                    // the tile id is not kept in the region database, so carry it over before we re-register
+                    RegionInfo.RegionSettings.TerrainImageID = existing.TerrainImage;
             }
 
             GridRegion region = new(RegionInfo);
