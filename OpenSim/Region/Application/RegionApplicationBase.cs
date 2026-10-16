@@ -88,11 +88,21 @@ namespace OpenSim
             }
 
             // unsecure main server
-            BaseHttpServer server = new BaseHttpServer(mainport);
+            BaseHttpServer server = new BaseHttpServer(m_networkServersInfo.HttpListenerAddress, mainport);
             if(!m_networkServersInfo.HttpUsesSSL)
             {
                 m_httpServer = server;
-                server.Start();
+                server.Start(m_networkServersInfo.HttpListenerPortMin, m_networkServersInfo.HttpListenerPortMax);
+
+                // MC patch 21: publish the port actually bound, before any region module
+                // reads it. Several modules (UrlModule, WorldMap) read http_listener_port
+                // from CONFIG rather than NetworkServersInfo and would otherwise demand
+                // the default and collide with another region's listener.
+                m_networkServersInfo.HttpListenerPort = server.Port;
+                m_httpServerPort = server.Port;
+                IConfig netConfig = Config.Configs["Network"] ?? Config.AddConfig("Network");
+                netConfig.Set("http_listener_port", server.Port);
+                m_log.InfoFormat("[REGION SERVER]: bound http port {0} written back to [Network] http_listener_port", server.Port);
             }
             else
                 server.Start();
