@@ -15933,6 +15933,13 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 ScenePresence presence = World.GetScenePresence(key);
                 if (presence != null)
                 {
+                    var dnm = World.RequestModuleInterface<IDisplayNameModule>();
+
+                    if(dnm is not null)
+                    {
+                        return dnm.GetDisplayName(key);
+                    }
+
                     return presence.Name;
                 }
             }
@@ -15947,7 +15954,9 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             ScenePresence lpresence = World.GetScenePresence(key);
             if (lpresence != null)
             {
-                string lname = lpresence.Name;
+                string lname = World.RequestModuleInterface<IDisplayNameModule>()?.GetDisplayName(key);
+                if (string.IsNullOrEmpty(lname))
+                    lname = lpresence.Name;
                 string ftid = m_AsyncCommands.DataserverPlugin.RequestWithImediatePost(m_host.LocalId,
                                                                    m_item.ItemID, lname);
                 return ftid;
@@ -15956,24 +15965,23 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             void act(string eventID)
             {
                 string name = string.Empty;
-                ScenePresence presence = World.GetScenePresence(key);
-                if (presence is not null)
-                {
-                    name = presence.Name;
-                }
-                else if (World.TryGetSceneObjectPart(key, out SceneObjectPart sop))
+                if (World.TryGetSceneObjectPart(key, out SceneObjectPart sop))
                 {
                     name = sop.Name;
                 }
                 else
                 {
-                    UserAccount account = m_userAccountService.GetUserAccount(RegionScopeID, key);
-                    if (account is not null)
+                    name = World.RequestModuleInterface<IDisplayNameModule>()?.GetDisplayName(key);
+                    if (string.IsNullOrEmpty(name))
                     {
-                        name = account.FirstName + " " + account.LastName;
+                        UserAccount account = m_userAccountService.GetUserAccount(RegionScopeID, key);
+                        if (account is not null)
+                        {
+                            name = account.FirstName + " " + account.LastName;
+                        }
                     }
                 }
-                m_AsyncCommands.DataserverPlugin.DataserverReply(eventID, name);
+                m_AsyncCommands.DataserverPlugin.DataserverReply(eventID, name ?? string.Empty);
             }
 
             UUID rq = m_AsyncCommands.DataserverPlugin.RegisterRequest(m_host.LocalId, m_item.ItemID, act);
