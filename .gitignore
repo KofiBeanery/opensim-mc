@@ -35,7 +35,9 @@
 */*/*/*/*/*/bin
 */*/*/*/*/*/*/bin
 .vs/
-addon-modules/
+addon-modules/*
+!addon-modules/README
+!addon-modules/OpenSimSearch/
 bin/Debug/*.dll
 bin/*.dll.mdb
 bin/*.db
