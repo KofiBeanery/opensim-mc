@@ -4,7 +4,7 @@
  */
 
 using System.Reflection;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 namespace OpenSim.Data.MySQL
 {
