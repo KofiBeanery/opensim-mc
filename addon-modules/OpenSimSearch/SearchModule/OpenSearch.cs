@@ -216,7 +216,7 @@ public class OpenSearchModule : ISearchModule, ISharedRegionModule
             return;
         }
 
-        ArrayList dataArray = (ArrayList)result["data"];
+        ArrayList dataArray = result["data"] as ArrayList ?? new ArrayList(); // no "data" member = no results
 
         int count = dataArray.Count;
         if (count > 100)
@@ -259,7 +259,7 @@ public class OpenSearchModule : ISearchModule, ISharedRegionModule
             return;
         }
 
-        ArrayList dataArray = (ArrayList)result["data"];
+        ArrayList dataArray = result["data"] as ArrayList ?? new ArrayList(); // no "data" member = no results
 
         int count = dataArray.Count;
         if (count > 100)
@@ -306,7 +306,7 @@ public class OpenSearchModule : ISearchModule, ISharedRegionModule
             return;
         }
 
-        ArrayList dataArray = (ArrayList)result["data"];
+        ArrayList dataArray = result["data"] as ArrayList ?? new ArrayList(); // no "data" member = no results
         int count = 0;
 
         /* Count entries in dataArray with valid region name to */
@@ -377,7 +377,7 @@ public class OpenSearchModule : ISearchModule, ISharedRegionModule
             return;
         }
 
-        ArrayList dataArray = (ArrayList)result["data"];
+        ArrayList dataArray = result["data"] as ArrayList ?? new ArrayList(); // no "data" member = no results
 
         int count = dataArray.Count;
         if (count > 100)
@@ -426,7 +426,7 @@ public class OpenSearchModule : ISearchModule, ISharedRegionModule
             return;
         }
 
-        ArrayList dataArray = (ArrayList)result["data"];
+        ArrayList dataArray = result["data"] as ArrayList ?? new ArrayList(); // no "data" member = no results
 
         int count = dataArray.Count;
         if (count > 100)
@@ -470,7 +470,7 @@ public class OpenSearchModule : ISearchModule, ISharedRegionModule
             return;
         }
 
-        ArrayList dataArray = (ArrayList)result["data"];
+        ArrayList dataArray = result["data"] as ArrayList ?? new ArrayList(); // no "data" member = no results
         if (dataArray.Count == 0)
         {
             // something bad happened here, if we could return an
@@ -519,7 +519,7 @@ public class OpenSearchModule : ISearchModule, ISharedRegionModule
         //The viewer seems to issue an info request even when it is
         //creating a new classified which means the data hasn't been
         //saved to the database yet so there is no info to find.
-        ArrayList dataArray = (ArrayList)result["data"];
+        ArrayList dataArray = result["data"] as ArrayList ?? new ArrayList(); // no "data" member = no results
         if (dataArray.Count == 0)
         {
             // Something bad happened here if we could not return an
@@ -580,7 +580,7 @@ public class OpenSearchModule : ISearchModule, ISharedRegionModule
                 return;
             }
 
-            ArrayList dataArray = (ArrayList)result["data"];
+            ArrayList dataArray = result["data"] as ArrayList ?? new ArrayList(); // no "data" member = no results
 
             int count = dataArray.Count;
             if (count > 100)
@@ -664,7 +664,7 @@ public class OpenSearchModule : ISearchModule, ISharedRegionModule
                 return;
             }
 
-            ArrayList dataArray = (ArrayList)result["data"];
+            ArrayList dataArray = result["data"] as ArrayList ?? new ArrayList(); // no "data" member = no results
 
             List<mapItemReply> mapitems = new List<mapItemReply>();
             int event_id;
