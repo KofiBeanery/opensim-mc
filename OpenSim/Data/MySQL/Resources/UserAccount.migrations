@@ -35,7 +35,7 @@ COMMIT;
 BEGIN;
 
 ALTER TABLE `UserAccounts` 
-ADD COLUMN `DisplayName` VARCHAR(31) NULL AFTER `active`,
+ADD COLUMN `DisplayName` VARCHAR(31) CHARACTER SET utf8mb4 NULL AFTER `active`,
 ADD COLUMN `NameChanged` INT NULL DEFAULT 0 AFTER `DisplayName`;
 
 COMMIT;
