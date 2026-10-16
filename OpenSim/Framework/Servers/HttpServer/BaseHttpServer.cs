@@ -1436,6 +1436,9 @@ namespace OpenSim.Framework.Servers.HttpServer
                     {
                         try
                         {
+                            jsonRpcRequest["__opensim_remote_address"] = OSD.FromString(request.RemoteIPEndPoint.Address.ToString());
+                            jsonRpcRequest["__opensim_llhttprequest"] = OSD.FromBoolean(request.Headers["X-SecondLife-Shard"] != null);
+
                             if(!method(jsonRpcRequest, ref jsonRpcResponse))
                             {
                                 // The handler sent back an unspecified error
