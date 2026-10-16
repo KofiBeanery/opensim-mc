@@ -3738,7 +3738,12 @@ namespace OpenSim.Region.Framework.Scenes
             bool notmvtrgt = !m_movingToTarget || m_moveToSpeed <= 0;
             // odd rescalings
             if(notmvtrgt)
-                direc *=  SpeedModifier * thisAddSpeedModifier;
+            {
+                // SpeedModifier (osSetSpeed) scales horizontal movement only, not climb/descent
+                direc *= thisAddSpeedModifier;
+                direc.X *= SpeedModifier;
+                direc.Y *= SpeedModifier;
+            }
             else
                 direc *= m_moveToSpeed;
 
