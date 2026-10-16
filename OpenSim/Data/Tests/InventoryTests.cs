@@ -36,7 +36,7 @@ using System.Reflection;
 using System.Data.Common;
 
 // DBMS-specific:
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 using OpenSim.Data.MySQL;
 
 using Mono.Data.Sqlite;

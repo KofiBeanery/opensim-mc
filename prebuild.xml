@@ -1212,7 +1212,6 @@
       <Reference name="OpenMetaverseTypes"/>
       <Reference name="OpenMetaverse"/>
       <Reference name="OpenMetaverse.StructuredData"/>
-      <Reference name="MySql.Data"/>
       <Reference name="OpenSim.Framework.Console"/>
       <Reference name="OpenSim.Region.Framework"/>
       <Reference name="log4net"/>
@@ -1340,7 +1339,6 @@
       <Reference name="OpenSim.Data"/>
       <Reference name="OpenSim.Data.MySQL"/>
       <Reference name="Ionic.Zip"/>
-      <Reference name="MySql.Data"/>
 
       <!-- For scripting in funny languages by default -->
       <Reference name="XMLRPC"/>
@@ -1924,7 +1922,6 @@
 
       <Reference name="Nini"/>
       <Reference name="Mono.Addins"/>
-      <Reference name="MySql.Data"/>
       <Reference name="log4net"/>
       <Reference name="OpenMetaverse"/>
       <Reference name="OpenMetaverseTypes"/>
@@ -2483,7 +2480,6 @@
       <Reference name="OpenSim.Data.MySQL"/>
       <Reference name="OpenSim.Data.SQLite"/>
 
-      <Reference name="MySql.Data"/>
       <Reference name="System.Data.SQLite"/>
       <Files>
         <Match pattern="*.cs" recurse="true">
