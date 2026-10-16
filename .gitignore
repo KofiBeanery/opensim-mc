@@ -38,6 +38,7 @@
 addon-modules/*
 !addon-modules/README
 !addon-modules/Gloebit/
+!addon-modules/OpenSimSearch/
 bin/Debug/*.dll
 bin/*.dll.mdb
 bin/*.db
