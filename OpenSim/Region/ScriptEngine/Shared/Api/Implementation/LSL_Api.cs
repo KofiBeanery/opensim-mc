@@ -17697,8 +17697,19 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
         public void llGodLikeRezObject(string inventory, LSL_Vector pos)
         {
-            if (!World.Permissions.IsGod(m_host.OwnerID))
-                NotImplemented("llGodLikeRezObject");
+            // NotImplemented() only reports (it does not stop the script) unless throwErrorOnNotImplemented is set,
+            // so a non-god used to fall through and rez any asset by id. Require the owner to be present and in god mode.
+            if (!World.TryGetScenePresence(m_host.OwnerID, out ScenePresence ownerSP))
+            {
+                Error("llGodLikeRezObject", "Owner is not in the region");
+                return;
+            }
+
+            if (ownerSP.GodController.GodLevel < 200 || !World.Permissions.IsGod(m_host.OwnerID))
+            {
+                Error("llGodLikeRezObject", "Owner is not in god mode");
+                return;
+            }
 
             AssetBase rezAsset = World.AssetService.Get(inventory);
             if (rezAsset == null)
