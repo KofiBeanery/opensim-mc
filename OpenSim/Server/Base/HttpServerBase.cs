@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Reflection;
 using OpenSim.Framework;
@@ -44,6 +45,9 @@ namespace OpenSim.Server.Base
 
         private uint m_consolePort;
 
+        private IPAddress m_ipaddress = IPAddress.Any;
+        public IPAddress IPAddress { get { return m_ipaddress; } }
+
         // Handle all the automagical stuff
         //
         public HttpServerBase(string prompt, string[] args) : base(prompt, args)
@@ -59,6 +63,10 @@ namespace OpenSim.Server.Base
                 System.Console.WriteLine("ERROR: Section [Network] not found, server can't start");
                 Environment.Exit(1);
             }
+
+            string address = networkConfig.GetString("address", "0.0.0.0");
+            if (!IPAddress.TryParse(address, out m_ipaddress))
+                m_ipaddress = IPAddress.Any;
 
             uint port = (uint)networkConfig.GetInt("port", 0);
 
@@ -87,7 +95,7 @@ namespace OpenSim.Server.Base
             //
             if (!ssl_main)
             {
-                httpServer = new BaseHttpServer(port);
+                httpServer = new BaseHttpServer(m_ipaddress, port);
             }
             else
             {
@@ -137,7 +145,7 @@ namespace OpenSim.Server.Base
                 else
                 {
                     m_log.WarnFormat("[SSL]: SSL port is active but no SSL is used because external SSL was requested.");
-                    MainServer.AddHttpServer(new BaseHttpServer(https_port));
+                    MainServer.AddHttpServer(new BaseHttpServer(m_ipaddress, https_port));
                 }
             }
         }

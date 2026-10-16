@@ -154,6 +154,13 @@ namespace OpenSim.Framework.Servers.HttpServer
             set { m_listenIPAddress = value; }
         }
 
+        public BaseHttpServer(IPAddress address, uint port)
+        {
+            m_listenIPAddress = address;
+            m_port = port;
+            SetHTTP404();
+        }
+
         public BaseHttpServer(uint port)
         {
             m_port = port;
@@ -1951,6 +1958,38 @@ namespace OpenSim.Framework.Servers.HttpServer
 
         public void Start()
         {
+            Start(true, true);
+        }
+
+        /// <summary>
+        /// Pick the first free TCP port in [port_min, port_max] (inclusive), make it this
+        /// server's port, then start normally. With port_min == port_max this behaves
+        /// exactly like Start().
+        /// </summary>
+        public void Start(uint port_min, uint port_max)
+        {
+            if (port_min != port_max)
+            {
+                var used = new HashSet<int>();
+                foreach (IPEndPoint ep in System.Net.NetworkInformation.IPGlobalProperties
+                                            .GetIPGlobalProperties().GetActiveTcpListeners())
+                    used.Add(ep.Port);
+
+                bool found = false;
+                for (uint p = port_min; p <= port_max; p++)
+                {
+                    if (!used.Contains((int)p))
+                    {
+                        m_port = p;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                    m_log.Error($"[BASE HTTP SERVER]: no free port in range {port_min}-{port_max}; trying {m_port}");
+            }
+
             Start(true, true);
         }
 

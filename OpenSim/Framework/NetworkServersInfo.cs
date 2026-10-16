@@ -26,13 +26,17 @@
  */
 
 using System;
+using System.Net;
 using Nini.Config;
 
 namespace OpenSim.Framework
 {
     public class NetworkServersInfo
     {
+        public IPAddress HttpListenerAddress = IPAddress.Any;
         public uint HttpListenerPort = ConfigSettings.DefaultRegionHttpPort;
+        public uint HttpListenerPortMin = ConfigSettings.DefaultRegionHttpPort;
+        public uint HttpListenerPortMax = ConfigSettings.DefaultRegionHttpPort;
         public bool secureInventoryServer = false;
         public bool isSandbox;
         public bool HttpUsesSSL = false;
@@ -61,7 +65,13 @@ namespace OpenSim.Framework
             IConfig netConfig =config.Configs["Network"];
             if (netConfig == null)
                 return;
+            string str_ip = netConfig.GetString("http_listener_address", "0.0.0.0");
+            if (!IPAddress.TryParse(str_ip, out HttpListenerAddress))
+                HttpListenerAddress = IPAddress.Any;
+
             HttpListenerPort = (uint) netConfig.GetInt("http_listener_port", (int) ConfigSettings.DefaultRegionHttpPort);
+            HttpListenerPortMin = (uint) netConfig.GetInt("http_listener_port_min", (int) HttpListenerPort);
+            HttpListenerPortMax = (uint) netConfig.GetInt("http_listener_port_max", (int) HttpListenerPort);
             httpSSLPort = (uint)netConfig.GetInt("http_listener_sslport", (int)ConfigSettings.DefaultRegionHttpPort + 1);
             HttpUsesSSL = netConfig.GetBoolean("http_listener_ssl", false);
             HttpSSLCN = netConfig.GetString("http_listener_cn", "localhost");
