@@ -1,117 +1,79 @@
-Welcome to OpenSimulator (OpenSim for short)!
+# Coir
 
-# Overview
+**Coir** is an OpenSimulator distribution: stock [OpenSimulator](http://opensimulator.org/) "Core" (0.9.3.x, .NET 8)
+plus a small, reviewable set of feature branches, built for the
+[Migrating Coconuts](https://world.migratingcoconuts.net) grid. Coir is the tough fibre of the coconut husk — strong,
+plain and useful — and that is the idea: **Core, with the extra features people have been getting from other forks,
+kept as thin patches on top so it can follow upstream.**
 
-OpenSim is a BSD Licensed Open Source project to develop a functioning
-virtual worlds server platform capable of supporting multiple clients
-and servers in a heterogeneous grid structure. OpenSim is written in
-C#, and can run under Mono or the Microsoft .NET runtimes.
+Coir is not affiliated with or endorsed by the OpenSimulator project. The upstream OpenSimulator README (build and run instructions) is kept as [`README-OpenSim.md`](README-OpenSim.md) and `BUILDING.md`.
 
-This is considered an alpha release.  Some stuff works, a lot doesn't.
-If it breaks, you get to keep *both* pieces.
+## What is in it
 
-# Compiling OpenSim
+Each item is its own topic branch in this repository, so you can read, cherry-pick or drop it:
 
-Please see BUILDING.md
+| Feature | Branch | Notes |
+|---|---|---|
+| Display names (viewer cap + storage) | `feature/display-names` | Ported onto Core from OpenSim-NGC's implementation (#94) |
+| Experiences | `feature/experiences` | Schema-neutral against existing databases |
+| MySqlConnector data driver | `feature/mysqlconnector` | Verified against Oracle MySQL 8.0 |
+| Gloebit money module | `feature/gloebit` | Add-on module, LGPL-3.0 (see its `LICENSE`) |
+| OpenSimSearch | `feature/opensimsearch-clean` | Add-on module, taken from OpenSim-NGC/Tranquillity v1.0.49 (no licence file of its own; see Credit) |
+| HTTP listener bind address + port range | `feature/ip-binding-port-range` | |
+| Control-plane security hardening | `feature/security-pr210` | Port of the upstream Tranquillity hardening work |
+| Extra OSSL/LSL functions | `feature/ossl-lsl-additions` | |
+| SQLite/standalone compatibility fixes | `feature/standalone-sqlite-compat` | |
+| Experience teleports bypass landing points | `feature/experience-landing-points` | Teleports under an allowed Experience use ViaLure |
+| Optional password-less IAR load/save | `feature/passwordless-iar` | `[InventoryArchiver] RequirePassword=false`; default `true` = stock behaviour |
+| Access control (ban list) | `feature/access-control` | Optional DB-backed IP / viewer MAC / id0 ban list for login and the Hypergrid gatekeeper; off unless `AccessControlService` is set |
+| Keep existing map tile at region start | `feature/maptile-if-missing` | `[Map] OnlyGenerateIfMissing = true`; default `false` = stock behaviour |
+| LSL / movement fixes | `feature/lsl-speed-tweaks` | `llGodLikeRezObject` requires a present owner in god mode; `SpeedModifier` scales X/Y only |
 
-# Running OpenSim on Windows
+`mc-clean` is the integration branch that releases are built from.
 
-You will need dotnet 8.0 runtime (https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+## Credit
 
+Coir exists because other people did the hard work first:
 
-To run OpenSim from a command prompt
+* **The OpenSimulator project and every one of its contributors** — Coir *is* Core with a few branches on top: the physics
+  (ubODE), the libomv libraries, the region and grid services, everything not listed below is theirs. See `LICENSE.txt` and
+  `CONTRIBUTORS.txt` for the full list. (Individual Core developers are deliberately not singled out: we credit all of
+  them, not some of them.)
+* **StolenRuby (Mobius Grid)** — the **HTTP listener IP binding** and **auto port-range** (Consortium fork, August 2020; Coir's `feature/ip-binding-port-range` is a direct re-base of that design and code), the **Experiences** work carried through OpenSim-NGC, and several small fixes that Core itself adopted (Top Scripts, EEP defaults, `llTargetedEmail`, attachment undo positions). StolenRuby also wrote an earlier, separate display-names implementation for Consortium (2020). (StolenRuby was with Mobius Grid at the time of this work.)
+* **Mike Chase (Utopia Skye)** — leads OpenSim-NGC / Tranquillity; the **display-names** implementation (#94) and its migration fix are his, and Coir's `feature/display-names` is that code ported onto Core. His NGC control-plane security hardening (#210) is the basis of `feature/security-pr210`.
+* **The OpenSim-NGC / Tranquillity project** — the control-plane hardening (PR #210) and the Gloebit / OpenSimSearch add-on modules these ports started from. (No Skia/CoreJ2K imaging work and no PR #252 texture fix is in Coir.)
+* **OpenSimSearch** — taken from OpenSim-NGC/Tranquillity v1.0.49 (`Addons/OpenSimSearch`), which carries no licence file or header of its own; it sits in a repository under the OpenSimulator BSD licence, and its `query.php` carries the notice "Copyright (c) Melanie Thielker (http://opensimulator.org/)". Coir's changes to it are small: Mono.Addins registration, Core build wiring, and treating a search reply with no `data` member as "no results" (reported upstream as OpenSim-NGC/OpenSim-Tranquillity#209). If you are the author or a rights holder and would like it credited differently, please open an issue.
+* **Gloebit** — the Gloebit OpenSim money module, Copyright (C) 2015 Gloebit LLC, LGPL-3.0, carried via OpenSim-NGC/Tranquillity v1.0.49 with its licence file unchanged.
+* **MySqlConnector** (Bradley Grainger and contributors, MIT licence) — the MySQL driver in Coir, replacing Oracle's `MySql.Data` that Core ships with. It is their work and Coir only uses it unmodified.
 
- * cd to the bin/ directory where you unpacked OpenSim
- * review and change configuration files (.ini) for your needs. see the "Configuring OpenSim" section
- * run OpenSim.exe
+### Whose commits are carried on top of Core
 
+Generated from `git log origin/master..mc-clean` at each release (names are in-world names where known). Contributors to
+Core itself are credited collectively above.
 
-# Running OpenSim on Linux/Mac
+| Contributor | Carried in | What |
+|---|---|---|
+| KofiBeanery (Migrating Coconuts) | all branches | Porting, integration, build and release |
+| Mike Chase (Utopia Skye) | `feature/display-names`, `feature/security-pr210`, `feature/experiences` (merge of StolenRuby's work, #86) | Display names (#94) + migration fix; control-plane hardening (#210); OpenSim-NGC / Tranquillity |
+| StolenRuby (Mobius Grid) | `feature/ip-binding-port-range`, `feature/experiences` | IP binding and port range (Consortium, 2020); Experiences |
+| Fly Man and Marty Mouse | `feature/experiences` | Experiences fixes (incl. a permission fix) |
 
-You will need
+If we have missed or mis-credited anyone, please open an issue and we will fix it.
 
- * [dotnet 8.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
- * libgdiplus 
- 
- if you have mono 6.x complete, you already have libgdiplus, otherwise you need to install it
- using a package manager for your operating system, like apt, brew, macports, etc
- for example on debian:
- 
- `apt-get update && apt-get install -y apt-utils libgdiplus libc6-dev`
- 
-To run OpenSim, from the unpacked distribution type:
+## Releases
 
- * cd bin
- * review and change configuration files (.ini) for your needs. see the "Configuring OpenSim" section
- * run ./opensim.sh
+Each release is tagged `<upstream>-mc<n>` (for example `0.9.3.1-mc1`) and carries:
 
+* **Source** — the tagged tree (GitHub's source archive).
+* **Linux x64 binary package** — `coir-<upstream>-mc<n>-<sha>.tar.gz` with a `.sha256`. Framework-dependent: needs the .NET 8 runtime.
+  No Windows or macOS binaries are published; they are untested.
 
-# Configuring OpenSim
+## Status
 
-When OpenSim starts for the first time, you will be prompted with a
-series of questions that look something like:
+Pre-release. Running in production on a handful of Migrating Coconuts regions; no warranty (see `LICENSE.txt`).
+Back up your databases before running any new OpenSimulator build against them.
 
-	[09-17 03:54:40] DEFAULT REGION CONFIG: Simulator Name [OpenSim Test]:
+## Licence
 
-For all the options except simulator name, you can safely hit enter to accept
-the default if you want to connect using a client on the same machine or over
-your local network.
-
-You will then be asked "Do you wish to join an existing estate?".  If you're
-starting OpenSim for the first time then answer no (which is the default) and
-provide an estate name.
-
-Shortly afterwards, you will then be asked to enter an estate owner first name,
-last name, password and e-mail (which can be left blank).  Do not forget these
-details, since initially only this account will be able to manage your region
-in-world.  You can also use these details to perform your first login.
-
-Once you are presented with a prompt that looks like:
-
-	Region (My region name) #
-
-You have successfully started OpenSim.
-
-If you want to create another user account to login rather than the estate
-account, then type "create user" on the OpenSim console and follow the prompts.
-
-Helpful resources:
- * http://opensimulator.org/wiki/Configuration
- * http://opensimulator.org/wiki/Configuring_Regions
-
-# Connecting to your OpenSim
-
-By default your sim will be available for login on port 9000.  You can login by
-adding -loginuri http://127.0.0.1:9000 to the command that starts Second Life
-(e.g. in the Target: box of the client icon properties on Windows).  You can
-also login using the network IP address of the machine running OpenSim (e.g.
-http://192.168.1.2:9000)
-
-To login, use the avatar details that you gave for your estate ownership or the
-one you set up using the "create user" command.
-
-# Bug reports
-
-In the very likely event of bugs biting you (err, your OpenSim) we
-encourage you to see whether the problem has already been reported on
-the [OpenSim mantis system](http://opensimulator.org/mantis/main_page.php).
-
-If your bug has already been reported, you might want to add to the
-bug description and supply additional information.
-
-If your bug has not been reported yet, file a bug report ("opening a
-mantis"). Useful information to include:
- * description of what went wrong
- * stack trace
- * OpenSim.log (attach as file)
- * OpenSim.ini (attach as file)
-
-
-# More Information on OpenSim
-
-More extensive information on building, running, and configuring
-OpenSim, as well as how to report bugs, and participate in the OpenSim
-project can always be found at http://opensimulator.org.
-
-Thanks for trying OpenSim, we hope it is a pleasant experience.
-
+BSD-3-Clause, inherited from OpenSimulator (`LICENSE.txt`); bundled add-on modules keep their own licences
+(Gloebit: LGPL-3.0). Redistributions must keep those notices.
