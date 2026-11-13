@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `GloebitSubscriptions` (
     INDEX ix_oid (`ObjectID`),
     INDEX ix_sid (`SubscriptionID`),
     INDEX ix_cts (`cTime`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 COMMIT;
 

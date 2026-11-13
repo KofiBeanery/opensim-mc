@@ -11,6 +11,6 @@ CREATE TABLE `MuteList` (
   `Stamp` int(11) NOT NULL,
   UNIQUE KEY `AgentID_2` (`AgentID`,`MuteID`,`MuteName`),
   KEY `AgentID` (`AgentID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 COMMIT;

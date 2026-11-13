@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `inventoryitems` (
   PRIMARY KEY (`inventoryID`),
   KEY `inventoryitems_avatarid` (`avatarID`),
   KEY `inventoryitems_parentFolderid` (`parentFolderID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `inventoryfolders` (
   `folderName` varchar(64) DEFAULT NULL,
@@ -37,6 +37,6 @@ CREATE TABLE IF NOT EXISTS `inventoryfolders` (
   PRIMARY KEY (`folderID`),
   KEY `inventoryfolders_agentid` (`agentID`),
   KEY `inventoryfolders_parentFolderid` (`parentFolderID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 COMMIT;

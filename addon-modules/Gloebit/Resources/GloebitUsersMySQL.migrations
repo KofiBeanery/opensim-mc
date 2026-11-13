@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `GloebitUsers` (
     `GloebitToken` CHAR(36) NOT NULL,
     `Status` INT(11),
     PRIMARY KEY (`PrincipalID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 COMMIT;
 
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `GloebitUsers` (
     `LastSessionID` CHAR(36) NOT NULL,
     PRIMARY KEY pk_gu_ak_pid    (`AppKey`, `PrincipalID`),
     INDEX       ix_gu_pid       (`PrincipalID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 COMMIT;
 

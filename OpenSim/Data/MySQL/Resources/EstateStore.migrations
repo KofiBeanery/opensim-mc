@@ -6,20 +6,20 @@ CREATE TABLE IF NOT EXISTS `estate_groups` (
   `EstateID` int(10) unsigned NOT NULL,
   `uuid` char(36) NOT NULL,
   KEY `EstateID` (`EstateID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `estate_managers` (
   `EstateID` int(10) unsigned NOT NULL,
   `uuid` char(36) NOT NULL,
   KEY `EstateID` (`EstateID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `estate_map` (
   `RegionID` char(36) NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
   `EstateID` int(11) NOT NULL,
   PRIMARY KEY (`RegionID`),
   KEY `EstateID` (`EstateID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `estate_settings` (
   `EstateID` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -50,13 +50,13 @@ CREATE TABLE IF NOT EXISTS `estate_settings` (
   `AllowParcelChanges` tinyint(4) NOT NULL DEFAULT '1',
   `AllowSetHome` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`EstateID`)
-) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `estate_users` (
   `EstateID` int(10) unsigned NOT NULL,
   `uuid` char(36) NOT NULL,
   KEY `EstateID` (`EstateID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `estateban` (
   `EstateID` int(10) unsigned NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `estateban` (
   `bannedIpHostMask` varchar(16) NOT NULL,
   `bannedNameMask` varchar(64) DEFAULT NULL,
   KEY `estateban_EstateID` (`EstateID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 COMMIT;
 
@@ -87,11 +87,11 @@ CREATE TABLE IF NOT EXISTS `estate_allowed_experiences` (
   `EstateID` int(10) unsigned NOT NULL,
   `uuid` char(36) NOT NULL,
   KEY `EstateID` (`EstateID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `estate_key_experiences` (
   `EstateID` int(10) unsigned NOT NULL,
   `uuid` char(36) NOT NULL,
   KEY `EstateID` (`EstateID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 COMMIT;

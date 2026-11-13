@@ -5,11 +5,11 @@ BEGIN;
 
 CREATE TABLE IF NOT EXISTS `prims` (
   `CreationDate` int(11) DEFAULT NULL,
-  `Name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `Text` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `Description` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `SitName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
-  `TouchName` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `Name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_ci DEFAULT NULL,
+  `Text` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_ci DEFAULT NULL,
+  `Description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_ci DEFAULT NULL,
+  `SitName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_ci DEFAULT NULL,
+  `TouchName` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_ci DEFAULT NULL,
   `ObjectFlags` int(11) DEFAULT NULL,
   `OwnerMask` int(11) DEFAULT NULL,
   `NextOwnerMask` int(11) DEFAULT NULL,
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `prims` (
   PRIMARY KEY (`UUID`),
   KEY `prims_regionuuid` (`RegionUUID`),
   KEY `prims_scenegroupid` (`SceneGroupID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `primshapes` (
   `Shape` int(11) DEFAULT NULL,
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS `primshapes` (
   `Media` text,
   `LastAttachPoint` int(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`UUID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `primitems` (
   `invType` int(11) DEFAULT NULL,
@@ -154,13 +154,13 @@ CREATE TABLE IF NOT EXISTS `primitems` (
   `lastOwnerID` char(36) DEFAULT NULL,
   PRIMARY KEY (`itemID`),
   KEY `primitems_primid` (`primID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `terrain` (
   `RegionUUID` varchar(255) DEFAULT NULL,
   `Revision` int(11) DEFAULT NULL,
   `Heightfield` longblob
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `land` (
   `UUID` varchar(255) NOT NULL,
@@ -204,21 +204,21 @@ CREATE TABLE IF NOT EXISTS `land` (
   `ObscureMusic` tinyint(1) NOT NULL DEFAULT '0',
   `ObscureMedia` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`UUID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `landaccesslist` (
   `LandUUID` varchar(255) DEFAULT NULL,
   `AccessUUID` varchar(255) DEFAULT NULL,
   `Flags` int(11) DEFAULT NULL,
   `Expires` int(11) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `regionban` (
   `regionUUID` varchar(36) NOT NULL,
   `bannedUUID` varchar(36) NOT NULL,
   `bannedIp` varchar(16) NOT NULL,
   `bannedIpHostMask` varchar(16) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `regionsettings` (
   `regionUUID` char(36) NOT NULL,
@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS `regionsettings` (
   `parcel_tile_ID` char(36) NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
   `covenant_datetime` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`regionUUID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `regionwindlight` (
   `region_id` varchar(36) NOT NULL DEFAULT '000000-0000-0000-0000-000000000000',
@@ -332,28 +332,28 @@ CREATE TABLE IF NOT EXISTS `regionwindlight` (
   `cloud_scroll_y_lock` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `draw_classic_clouds` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`region_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `spawn_points` (
-  `RegionID` varchar(36) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `RegionID` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_as_ci NOT NULL,
   `Yaw` float NOT NULL,
   `Pitch` float NOT NULL,
   `Distance` float NOT NULL,
   KEY `RegionID` (`RegionID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `regionenvironment` (
   `region_id` varchar(36) NOT NULL,
   `llsd_settings` text NOT NULL,
   PRIMARY KEY (`region_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `regionextra` (
   `RegionID` char(36) NOT NULL,
   `Name` varchar(32) NOT NULL,
   `value` text,
   PRIMARY KEY (`RegionID`,`Name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 COMMIT;
 
@@ -387,7 +387,7 @@ CREATE TABLE IF NOT EXISTS `bakedterrain` (
   `RegionUUID` varchar(255) DEFAULT NULL,
   `Revision` int(11) DEFAULT NULL,
   `Heightfield` longblob
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 COMMIT;
 

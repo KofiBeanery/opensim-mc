@@ -14,15 +14,15 @@ CREATE TABLE IF NOT EXISTS `experiences` (
 	`maturity` INT NOT NULL,
 	`properties` INT NOT NULL,
 	PRIMARY KEY (`public_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 CREATE TABLE IF NOT EXISTS `experience_permissions` (
-	`experience` VARCHAR(36) NOT NULL COLLATE 'utf8_unicode_ci',
-	`avatar` VARCHAR(36) NOT NULL COLLATE 'utf8_unicode_ci',
+	`experience` VARCHAR(36) NOT NULL COLLATE 'utf8mb4_0900_as_ci',
+	`avatar` VARCHAR(36) NOT NULL COLLATE 'utf8mb4_0900_as_ci',
 	`allow` BIT(1) NOT NULL,
 	PRIMARY KEY (`experience`, `avatar`) USING BTREE,
 	INDEX `avatar` (`avatar`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 COMMIT;
 
@@ -33,8 +33,8 @@ BEGIN;
 CREATE TABLE IF NOT EXISTS `experience_kv` (
 	`experience` VARCHAR(36) NOT NULL,
 	`key` VARCHAR(1011) NOT NULL COLLATE 'latin1_bin', 
-    `value` VARCHAR(4095) NOT NULL COLLATE 'utf8mb4_0900_ai_ci', 
+    `value` VARCHAR(4095) NOT NULL COLLATE 'utf8mb4_0900_as_ci', 
     PRIMARY KEY(`experience`, `key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 
 COMMIT;
