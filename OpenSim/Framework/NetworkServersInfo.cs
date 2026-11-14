@@ -45,6 +45,10 @@ namespace OpenSim.Framework
         public string HttpSSLCNCertPass = "";
         public uint httpSSLPort = 9001;
 
+        // TCP accept-queue (listen backlog) depth for the region HTTP listener(s).
+        // Default 512 (was hardcoded 64); override via [Network] ListenBacklog.
+        public int ListenBacklog = 512;
+
         // "Out of band" managemnt https
         public bool ssl_listener = false;
         public bool ssl_external = false;
@@ -73,6 +77,7 @@ namespace OpenSim.Framework
             HttpListenerPortMin = (uint) netConfig.GetInt("http_listener_port_min", (int) HttpListenerPort);
             HttpListenerPortMax = (uint) netConfig.GetInt("http_listener_port_max", (int) HttpListenerPort);
             httpSSLPort = (uint)netConfig.GetInt("http_listener_sslport", (int)ConfigSettings.DefaultRegionHttpPort + 1);
+            ListenBacklog = netConfig.GetInt("ListenBacklog", 512);
             HttpUsesSSL = netConfig.GetBoolean("http_listener_ssl", false);
             HttpSSLCN = netConfig.GetString("http_listener_cn", "localhost");
             HttpSSLCertPath = netConfig.GetString("http_listener_cert_path", HttpSSLCertPath);

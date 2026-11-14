@@ -116,6 +116,8 @@ namespace OpenSim.Server.Base
                 httpServer = new BaseHttpServer(port, ssl_main, cert_path, cert_pass);
             }
 
+            httpServer.ListenBacklog = networkConfig.GetInt("ListenBacklog", 512);
+
             MainServer.AddHttpServer(httpServer);
             MainServer.Instance = httpServer;
 

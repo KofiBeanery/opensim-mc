@@ -83,12 +83,14 @@ namespace OpenSim
                         mainSSLport, m_networkServersInfo.HttpUsesSSL,
                         m_networkServersInfo.HttpSSLCN,
                         m_networkServersInfo.HttpSSLCertPath, m_networkServersInfo.HttpSSLCNCertPass);
+                m_httpServer.ListenBacklog = m_networkServersInfo.ListenBacklog;
                 m_httpServer.Start();
                 MainServer.AddHttpServer(m_httpServer);
             }
 
             // unsecure main server
             BaseHttpServer server = new BaseHttpServer(m_networkServersInfo.HttpListenerAddress, mainport);
+            server.ListenBacklog = m_networkServersInfo.ListenBacklog;
             if(!m_networkServersInfo.HttpUsesSSL)
             {
                 m_httpServer = server;

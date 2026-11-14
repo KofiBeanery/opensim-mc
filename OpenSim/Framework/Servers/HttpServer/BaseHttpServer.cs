@@ -123,6 +123,11 @@ namespace OpenSim.Framework.Servers.HttpServer
 
         protected IPAddress m_listenIPAddress = IPAddress.Any;
 
+        // TCP accept-queue (listen backlog) depth. Previously hardcoded to 64, which
+        // overflowed under login bursts (TcpExtListenDrops climbing while the kernel
+        // somaxconn=1024 sat unused). Default 512; override via [Network] ListenBacklog.
+        protected int m_listenBacklog = 512;
+
         public string Protocol
         {
             get { return m_ssl ? "https://" : "http://"; }
@@ -152,6 +157,12 @@ namespace OpenSim.Framework.Servers.HttpServer
         {
             get { return m_listenIPAddress; }
             set { m_listenIPAddress = value; }
+        }
+
+        public int ListenBacklog
+        {
+            get { return m_listenBacklog; }
+            set { m_listenBacklog = value; }
         }
 
         public BaseHttpServer(IPAddress address, uint port)
@@ -2037,7 +2048,7 @@ namespace OpenSim.Framework.Servers.HttpServer
                 }
 
                 m_httpListener.RequestReceived += OnRequest;
-                m_httpListener.Start(64);
+                m_httpListener.Start(m_listenBacklog);
 
                 lock(m_generalLock)
                 {
